@@ -169,46 +169,108 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col h-dvh max-w-md mx-auto w-full relative">
-      <AppHeader user={user} xpPercent={xpPercent} />
+    <>
+      {/* ── MOBILE layout (< lg) ─────────────────────────────────────── */}
+      <div className="flex flex-col h-dvh w-full relative lg:hidden">
+        <AppHeader user={user} xpPercent={xpPercent} />
 
-      <main className="flex-1 overflow-y-auto">
-        {activeTab === "chat" && (
-          <ChatTab
-            messages={messages}
-            inputValue={inputValue}
-            isLoading={isLoading}
-            onInputChange={setInputValue}
-            onSend={sendMessage}
-            onClear={clearChatHistory}
-          />
-        )}
-        {activeTab === "status" && (
-          <StatusTab
-            user={user}
-            xpPercent={xpPercent}
-            glucoseData={glucoseData}
-            completedMissions={completedMissions}
-            unlockedBadges={unlockedBadges}
-          />
-        )}
-        {activeTab === "missoes" && (
-          <MissionsTab
-            missions={missions}
-            completedMissions={completedMissions}
-            onToggleMission={toggleMission}
-          />
-        )}
-        {activeTab === "conquistas" && (
-          <BadgesTab
-            badges={badges}
-            unlockedBadges={unlockedBadges}
-          />
-        )}
-        {activeTab === "ranking" && <RankingTab />}
-      </main>
+        <main className="flex-1 overflow-y-auto">
+          {activeTab === "chat" && (
+            <ChatTab
+              messages={messages}
+              inputValue={inputValue}
+              isLoading={isLoading}
+              onInputChange={setInputValue}
+              onSend={sendMessage}
+              onClear={clearChatHistory}
+            />
+          )}
+          {activeTab === "status" && (
+            <StatusTab
+              user={user}
+              xpPercent={xpPercent}
+              glucoseData={glucoseData}
+              completedMissions={completedMissions}
+              unlockedBadges={unlockedBadges}
+            />
+          )}
+          {activeTab === "missoes" && (
+            <MissionsTab
+              missions={missions}
+              completedMissions={completedMissions}
+              onToggleMission={toggleMission}
+            />
+          )}
+          {activeTab === "conquistas" && (
+            <BadgesTab badges={badges} unlockedBadges={unlockedBadges} />
+          )}
+          {activeTab === "ranking" && <RankingTab />}
+        </main>
 
-      <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-    </div>
+        <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      </div>
+
+      {/* ── DESKTOP layout (≥ lg) ────────────────────────────────────── */}
+      <div className="hidden lg:flex h-dvh w-full overflow-hidden">
+        {/* Sidebar — chat sempre visível */}
+        <aside className="flex flex-col w-[380px] xl:w-[420px] shrink-0 border-r border-border">
+          <AppHeader user={user} xpPercent={xpPercent} variant="sidebar" />
+          <div className="flex-1 overflow-hidden">
+            <ChatTab
+              messages={messages}
+              inputValue={inputValue}
+              isLoading={isLoading}
+              onInputChange={setInputValue}
+              onSend={sendMessage}
+              onClear={clearChatHistory}
+            />
+          </div>
+        </aside>
+
+        {/* Main area */}
+        <div className="flex flex-col flex-1 min-w-0">
+          {/* Top bar com navegação horizontal */}
+          <TabNavigation
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            variant="horizontal"
+          />
+
+          <main className="flex-1 overflow-y-auto">
+            <div className="max-w-3xl mx-auto">
+              {activeTab === "chat" && (
+                <StatusTab
+                  user={user}
+                  xpPercent={xpPercent}
+                  glucoseData={glucoseData}
+                  completedMissions={completedMissions}
+                  unlockedBadges={unlockedBadges}
+                />
+              )}
+              {activeTab === "status" && (
+                <StatusTab
+                  user={user}
+                  xpPercent={xpPercent}
+                  glucoseData={glucoseData}
+                  completedMissions={completedMissions}
+                  unlockedBadges={unlockedBadges}
+                />
+              )}
+              {activeTab === "missoes" && (
+                <MissionsTab
+                  missions={missions}
+                  completedMissions={completedMissions}
+                  onToggleMission={toggleMission}
+                />
+              )}
+              {activeTab === "conquistas" && (
+                <BadgesTab badges={badges} unlockedBadges={unlockedBadges} />
+              )}
+              {activeTab === "ranking" && <RankingTab />}
+            </div>
+          </main>
+        </div>
+      </div>
+    </>
   );
 }
