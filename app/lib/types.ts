@@ -36,4 +36,17 @@ export interface GlucoseEntry {
   valor: number;
 }
 
-export type TabId = "chat" | "status" | "missoes" | "conquistas";
+export type TabId = "chat" | "status" | "missoes" | "conquistas" | "ranking";
+
+export interface RankingPlayer {
+  id: string;
+  nome: string;
+  avatar: string;
+  nivel: number;
+  xp_semana: number;
+  streak_dias: number;
+  missoes_semana: number;
+  isCurrentUser?: boolean;
+  variacao: "up" | "down" | "same" | "new";
+  posicao_anterior: number;
+}

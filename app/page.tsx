@@ -11,6 +11,7 @@ import ChatTab from "@/app/components/chat/ChatTab";
 import StatusTab from "@/app/components/status/StatusTab";
 import MissionsTab from "@/app/components/missions/MissionsTab";
 import BadgesTab from "@/app/components/badges/BadgesTab";
+import RankingTab from "@/app/components/ranking/RankingTab";
 
 const WELCOME_MESSAGE: ChatMessage = {
   id: "welcome",
@@ -204,6 +205,7 @@ export default function Home() {
             unlockedBadges={unlockedBadges}
           />
         )}
+        {activeTab === "ranking" && <RankingTab />}
       </main>
 
       <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />

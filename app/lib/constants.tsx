@@ -1,5 +1,5 @@
 import React from "react";
-import type { Mission, Badge, UserProfile, TabId } from "./types";
+import type { Mission, Badge, UserProfile, TabId, RankingPlayer } from "./types";
 
 export const DEFAULT_USER: UserProfile = {
   nome: "Paciente",
@@ -66,5 +66,108 @@ export const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
         <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
       </svg>
     ),
+  },
+  {
+    id: "ranking",
+    label: "Ranking",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10" />
+        <line x1="12" y1="20" x2="12" y2="4" />
+        <line x1="6" y1="20" x2="6" y2="14" />
+      </svg>
+    ),
+  },
+];
+
+export const MOCK_RANKING_PLAYERS: RankingPlayer[] = [
+  {
+    id: "1",
+    nome: "Ana Beatriz",
+    avatar: "👩",
+    nivel: 12,
+    xp_semana: 1840,
+    streak_dias: 21,
+    missoes_semana: 34,
+    variacao: "same",
+    posicao_anterior: 1,
+  },
+  {
+    id: "2",
+    nome: "Carlos M.",
+    avatar: "🧔",
+    nivel: 10,
+    xp_semana: 1520,
+    streak_dias: 14,
+    missoes_semana: 28,
+    variacao: "up",
+    posicao_anterior: 3,
+  },
+  {
+    id: "3",
+    nome: "Fernanda L.",
+    avatar: "👩‍🦰",
+    nivel: 9,
+    xp_semana: 1390,
+    streak_dias: 9,
+    missoes_semana: 25,
+    variacao: "down",
+    posicao_anterior: 2,
+  },
+  {
+    id: "4",
+    nome: "Roberto S.",
+    avatar: "👨‍🦳",
+    nivel: 8,
+    xp_semana: 1210,
+    streak_dias: 7,
+    missoes_semana: 22,
+    variacao: "up",
+    posicao_anterior: 6,
+  },
+  {
+    id: "me",
+    nome: "Você",
+    avatar: "🧑",
+    nivel: 1,
+    xp_semana: 0,
+    streak_dias: 0,
+    missoes_semana: 0,
+    isCurrentUser: true,
+    variacao: "new",
+    posicao_anterior: 0,
+  },
+  {
+    id: "6",
+    nome: "Juliana P.",
+    avatar: "👩‍🦱",
+    nivel: 6,
+    xp_semana: 890,
+    streak_dias: 5,
+    missoes_semana: 16,
+    variacao: "down",
+    posicao_anterior: 5,
+  },
+  {
+    id: "7",
+    nome: "Marcos T.",
+    avatar: "🧑‍🦲",
+    nivel: 5,
+    xp_semana: 720,
+    streak_dias: 4,
+    missoes_semana: 13,
+    variacao: "new",
+    posicao_anterior: 0,
+  },
+  {
+    id: "8",
+    nome: "Patrícia G.",
+    avatar: "👩‍🦳",
+    nivel: 4,
+    xp_semana: 540,
+    streak_dias: 3,
+    missoes_semana: 10,
+    variacao: "same",
+    posicao_anterior: 8,
   },
 ];
