@@ -1,0 +1,139 @@
+{
+  "name": "Glicogame — Chat IA (Groq API)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "glicogame",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "glicogame"
+    },
+    {
+      "parameters": {
+        "jsCode": "const message = $input.first().json.body.message;\n\nconst systemPrompt = `Você é o assistente clínico do Glicogame, um app para pacientes com diabetes.\n\nSua função:\n1. Receber a mensagem do paciente em linguagem natural.\n2. Extrair TODOS os dados clínicos presentes.\n3. Classificar em categorias.\n4. Calcular pontos de XP.\n5. Retornar ESTRITAMENTE um JSON válido (sem markdown, sem backticks).\n\nCategorias válidas: glicose, medicamento, alimentacao, atividade_fisica, sintoma, outro.\n\nTabela de XP:\n- Registrar glicose: +15 XP\n- Glicose dentro da meta (70-140 mg/dL): +10 XP\n- Glicose fora da meta: +5 XP\n- Registrar refeição saudável: +15 XP\n- Registrar refeição pouco saudável: +5 XP\n- Tomar medicamento no horário: +20 XP\n- Relatar que esqueceu medicamento: +3 XP\n- Registrar atividade física: +20 XP\n- Relatar sintoma: +10 XP\n- Interação genérica: +2 XP\n\nSome os XP de TODAS as ações identificadas na mensagem.\n\nFormato de saída (deve ser um objeto JSON estrito):\n{\n  \"categorias\": [\"glicose\"],\n  \"valor_glicose\": 110,\n  \"descricao_resumida\": \"Registrou glicose de 110 mg/dL.\",\n  \"avaliacao\": \"positiva\",\n  \"feedback_paciente\": \"Ótimo registro! Sua glicose está dentro da meta.\",\n  \"xp_ganho\": 25,\n  \"detalhes_xp\": [{\"acao\": \"Registrar glicose\", \"xp\": 15}],\n  \"dados_extraidos\": {\"glicose_mg_dl\": 110, \"alimentos\": [], \"medicamentos\": [], \"atividade_fisica\": null, \"sintomas\": []},\n  \"alerta_clinico\": false,\n  \"mensagem_alerta\": null\n}\n\nSe valor_glicose < 54 ou > 300, defina alerta_clinico: true com orientação para buscar ajuda médica.\nfeedback_paciente deve ser encorajador, direto e com no máximo 1 emoji.\nNUNCA retorne texto fora do JSON.`;\n\nconst requestBody = {\n  model: \"llama3-70b-8192\",\n  messages: [\n    { role: \"system\", content: systemPrompt },\n    { role: \"user\", content: message }\n  ],\n  response_format: { type: \"json_object\" }\n};\n\nreturn [{ json: { requestBody } }];"
+      },
+      "id": "prepare-request",
+      "name": "Preparar Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.requestBody }}",
+        "options": {}
+      },
+      "id": "groq-api",
+      "name": "Groq API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [720, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SUBSTITUIR",
+          "name": "Groq API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const groqResponse = $input.first().json;\n\nlet parsed;\ntry {\n  const text = groqResponse.choices[0].message.content;\n  parsed = JSON.parse(text);\n} catch (e) {\n  parsed = {\n    categorias: ['outro'],\n    valor_glicose: null,\n    descricao_resumida: 'Não foi possível processar.',\n    avaliacao: 'neutra',\n    feedback_paciente: 'Desculpe, não consegui entender. Pode reformular?',\n    xp_ganho: 2,\n    detalhes_xp: [{ acao: 'Interação genérica', xp: 2 }],\n    dados_extraidos: { glicose_mg_dl: null, alimentos: [], medicamentos: [], atividade_fisica: null, sintomas: [] },\n    alerta_clinico: false,\n    mensagem_alerta: null\n  };\n}\n\nreturn [{ json: parsed }];"
+      },
+      "id": "parse-response",
+      "name": "Extrair JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond-webhook",
+      "name": "Responder",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1200, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Preparar Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Request": {
+      "main": [
+        [
+          {
+            "node": "Groq API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq API": {
+      "main": [
+        [
+          {
+            "node": "Extrair JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair JSON": {
+      "main": [
+        [
+          {
+            "node": "Responder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "Glicogame MVP"
+    }
+  ]
+}
