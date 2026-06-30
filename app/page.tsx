@@ -12,6 +12,7 @@ import StatusTab from "@/app/components/status/StatusTab";
 import MissionsTab from "@/app/components/missions/MissionsTab";
 import BadgesTab from "@/app/components/badges/BadgesTab";
 import RankingTab from "@/app/components/ranking/RankingTab";
+import WelcomePanel from "@/app/components/layout/WelcomePanel";
 
 const WELCOME_MESSAGE: ChatMessage = {
   id: "welcome",
@@ -236,38 +237,32 @@ export default function Home() {
             variant="horizontal"
           />
 
-          <main className="flex-1 overflow-y-auto">
-            <div className="max-w-3xl mx-auto">
-              {activeTab === "chat" && (
-                <StatusTab
-                  user={user}
-                  xpPercent={xpPercent}
-                  glucoseData={glucoseData}
-                  completedMissions={completedMissions}
-                  unlockedBadges={unlockedBadges}
-                />
-              )}
-              {activeTab === "status" && (
-                <StatusTab
-                  user={user}
-                  xpPercent={xpPercent}
-                  glucoseData={glucoseData}
-                  completedMissions={completedMissions}
-                  unlockedBadges={unlockedBadges}
-                />
-              )}
-              {activeTab === "missoes" && (
-                <MissionsTab
-                  missions={missions}
-                  completedMissions={completedMissions}
-                  onToggleMission={toggleMission}
-                />
-              )}
-              {activeTab === "conquistas" && (
-                <BadgesTab badges={badges} unlockedBadges={unlockedBadges} />
-              )}
-              {activeTab === "ranking" && <RankingTab />}
-            </div>
+          <main className="flex-1 overflow-y-auto flex flex-col">
+            {activeTab === "chat" && <WelcomePanel />}
+            {activeTab !== "chat" && (
+              <div className="max-w-3xl mx-auto w-full">
+                {activeTab === "status" && (
+                  <StatusTab
+                    user={user}
+                    xpPercent={xpPercent}
+                    glucoseData={glucoseData}
+                    completedMissions={completedMissions}
+                    unlockedBadges={unlockedBadges}
+                  />
+                )}
+                {activeTab === "missoes" && (
+                  <MissionsTab
+                    missions={missions}
+                    completedMissions={completedMissions}
+                    onToggleMission={toggleMission}
+                  />
+                )}
+                {activeTab === "conquistas" && (
+                  <BadgesTab badges={badges} unlockedBadges={unlockedBadges} />
+                )}
+                {activeTab === "ranking" && <RankingTab />}
+              </div>
+            )}
           </main>
         </div>
       </div>
